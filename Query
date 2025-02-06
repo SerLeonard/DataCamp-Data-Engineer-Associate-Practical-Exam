@@ -1,0 +1,41 @@
+# TASK 1  
+SELECT user_id,
+	CASE WHEN age IS NULL THEN (SELECT AVG(age) FROM public.users) ELSE age END AS age,
+	CASE WHEN registration_date IS NULL THEN '2024-01-01' ELSE registration_date END AS registration_date, 
+	COALESCE(email, 'Unknown') AS email,
+	CASE WHEN workout_frequency IS NULL OR workout_frequency = '' THEN 'flexible' ELSE LOWER(workout_frequency) END AS workout_frequency
+FROM public.users
+
+
+# TASK 2
+SELECT 
+	e.event_id,
+	COALESCE(e.game_id, g.game_id) AS game_id,
+	e.device_id,
+	e.user_id,
+	e.event_time,
+	g.game_type
+FROM public.events AS e
+LEFT JOIN public.games AS g
+ON g.game_type = 'running' AND e.event_time < '2021-01-01';
+
+
+# TASK 3
+SELECT 
+	e.user_id, 
+	e.event_time
+FROM public.events AS e
+INNER JOIN public.games AS g
+USING(game_id)
+WHERE g.game_type = 'biking';
+
+
+# TASK 4
+SELECT 
+	COUNT(DISTINCT e.user_id) AS user_count,
+	g.game_type,
+	e.game_id
+FROM public.events AS e
+INNER JOIN public.games AS g
+USING(game_id)
+GROUP BY g.game_type, e.game_id;
